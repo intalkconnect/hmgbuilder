@@ -328,7 +328,12 @@ nodes.forEach((node) => {
     }));
   }
 
-  blocks[id] = clonedBlock;
+  blocks[id] = {
+  ...clonedBlock,
+  position: node.position,     // <- salva posição
+  color: node.data.color       // <- salva cor atual (opcional)
+};
+
 });
 
     const flowData = {
@@ -408,7 +413,12 @@ nodes.forEach((node) => {
     }));
   }
 
-  blocks[id] = clonedBlock;
+  blocks[id] = {
+  ...clonedBlock,
+  position: node.position,     // <- salva posição
+  color: node.data.color       // <- salva cor atual (opcional)
+};
+
 });
 
 
