@@ -11,10 +11,13 @@ export default function NodeConfigPanel({
   const [tab, setTab] = useState("conteudo");
   const [flowHistory, setFlowHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false)
+  
 
     useEffect(() => {
     fetchLatestFlows();
   }, []);
+
+
 
   const fetchLatestFlows = async () => {
     setLoadingHistory(true);
@@ -29,18 +32,22 @@ export default function NodeConfigPanel({
     }
   };
 
-    const handleRestore = async (id) => {
-    try {
-      const res = await fetch(`https://ia-srv-meta.9j9goo.easypanel.host/flow/data/${id}`);
-      const data = await res.json();
-      if (data && data.blocks) {
-        alert(`Fluxo restaurado com sucesso: ${id}`);
-        window.location.reload(); // ou use lógica para setar nodes e edges dinamicamente
-      }
-    } catch (err) {
-      alert("Erro ao restaurar fluxo");
-    }
-  };
+const handleRestore = async (id) => {
+  try {
+    // Ativa o fluxo primeiro
+    await fetch("https://ia-srv-meta.9j9goo.easypanel.host/flow/activate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    // Depois recarrega a página para aplicar o fluxo ativo
+    window.location.reload();
+  } catch (err) {
+    alert("Erro ao restaurar fluxo");
+  }
+};
+
 
   if (!selectedNode) return (
     <aside style={asideStyle}>
