@@ -5,6 +5,7 @@ import ReactFlow, {
   addEdge,
   applyNodeChanges,
   applyEdgeChanges,
+  useReactFlow 
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -25,6 +26,8 @@ import {
   HeadphonesIcon,
   ArrowDownCircleIcon,
 } from "lucide-react";
+
+const { setViewport } = useReactFlow();
 
 const iconMap = {
   Zap: <Zap size={16} />,
@@ -302,6 +305,7 @@ const onNodesChange = useCallback((changes) => {
   };
 
   loadLatestFlow();
+    setViewport({ x: 0, y: 0, zoom: 0.8 }, { duration: 800 });
 }, []);
 
   const handlePublish = async () => {
@@ -586,7 +590,6 @@ nodes.forEach((node) => {
           setSelectedEdgeId(null); // limpa a linha
           setHighlightedNodeId(null); // limpa destaque
         }}
-        fitView
       >
         <Background color="#444" gap={16} />
         <Controls />
