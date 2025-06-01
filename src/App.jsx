@@ -253,6 +253,53 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedEdgeId, selectedNode, edges]);
 
+  useEffect(() => {
+  const loadLatestFlow = async () => {
+    try {
+      const latestRes = await fetch("https://ia-srv-meta.9j9goo.easypanel.host/flow/latest");
+      const latestData = await latestRes.json();
+      const latestFlowId = latestData[0]?.id;
+
+      if (!latestFlowId) return;
+
+      const flowRes = await fetch(`https://ia-srv-meta.9j9goo.easypanel.host/flow/data/${latestFlowId}`);
+      const flowData = await flowRes.json();
+
+      const loadedNodes = [];
+      const loadedEdges = [];
+
+      Object.entries(flowData.blocks).forEach(([label, block]) => {
+        loadedNodes.push({
+          id: label,
+          type: "quadrado",
+          position: block.position || { x: 100, y: 100 },
+          data: {
+            label,
+            type: block.type,
+            color: block.color || "#607D8B",
+            block,
+          },
+        });
+
+        (block.actions || []).forEach((action) => {
+          loadedEdges.push({
+            id: `${label}-${action.next}`,
+            source: label,
+            target: action.next,
+          });
+        });
+      });
+
+      setNodes(loadedNodes);
+      setEdges(loadedEdges);
+    } catch (err) {
+      console.error("Erro ao carregar fluxo ativo", err);
+    }
+  };
+
+  loadLatestFlow();
+}, []);
+
   const handlePublish = async () => {
     setIsPublishing(true);
 
