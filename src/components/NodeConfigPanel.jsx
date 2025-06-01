@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import { Trash2 } from "lucide-react";
 
 export default function NodeConfigPanel({
@@ -9,7 +9,55 @@ export default function NodeConfigPanel({
   onConnectNodes,
 }) {
   const [tab, setTab] = useState("conteudo");
-  if (!selectedNode) return null;
+  const [flowHistory, setFlowHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false)
+
+    useEffect(() => {
+    fetchLatestFlows();
+  }, []);
+
+  const fetchLatestFlows = async () => {
+    setLoadingHistory(true);
+    try {
+      const res = await fetch("https://ia-srv-meta.9j9goo.easypanel.host/flow/latest");
+      const data = await res.json();
+      setFlowHistory(data.slice(0, 10));
+    } catch (err) {
+      console.error("Erro ao carregar histórico de fluxos", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+    const handleRestore = async (id) => {
+    try {
+      const res = await fetch(`https://ia-srv-meta.9j9goo.easypanel.host/flow/data/${id}`);
+      const data = await res.json();
+      if (data && data.blocks) {
+        alert(`Fluxo restaurado com sucesso: ${id}`);
+        window.location.reload(); // ou use lógica para setar nodes e edges dinamicamente
+      }
+    } catch (err) {
+      alert("Erro ao restaurar fluxo");
+    }
+  };
+
+  if (!selectedNode) return (
+    <aside style={asideStyle}>
+      <h3>Histórico de Fluxos</h3>
+      {loadingHistory ? <p>Carregando...</p> : (
+        flowHistory.map((flow) => (
+          <div key={flow.id} style={{ marginBottom: '1rem' }}>
+            <strong>ID:</strong> {flow.id.slice(0, 8)}...<br />
+            <strong>Data:</strong> {new Date(flow.created_at).toLocaleString()}<br />
+            <button onClick={() => handleRestore(flow.id)} style={inputStyle}>
+              Restaurar
+            </button>
+          </div>
+        ))
+      )}
+    </aside>
+  );
 
   const { block } = selectedNode.data;
   const {
