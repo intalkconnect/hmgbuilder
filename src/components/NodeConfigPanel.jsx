@@ -15,6 +15,23 @@ export default function NodeConfigPanel({
 
     useEffect(() => {
     fetchLatestFlows();
+      
+Object.entries(blocks).forEach(([label, block]) => {
+  const nodeId = label;
+  nodes.push({
+    id: nodeId,
+    type: 'quadrado',
+    position: block.position || { x: 100, y: 100 },
+    data: {
+      label,
+      type: block.type,
+      color: getColorForBlockType(block.type),
+      block,
+    },
+  });
+});
+
+      
   }, []);
 
 
