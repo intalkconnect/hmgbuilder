@@ -8,7 +8,7 @@ export const HumanNodeTemplate = {
     content: {
       queueName: '',
     },
-    awaitResponse: false,
+    awaitResponse: true,
     awaitTimeInSeconds: 0,
     sendDelayInSeconds: 0,
     actions: [],
