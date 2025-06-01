@@ -27,8 +27,6 @@ import {
   ArrowDownCircleIcon,
 } from "lucide-react";
 
-const { setViewport } = useReactFlow();
-
 const iconMap = {
   Zap: <Zap size={16} />,
   HelpCircle: <HelpCircle size={16} />,
