@@ -1,0 +1,12 @@
+body { margin: 0; font-family: sans-serif; }
+
+.react-flow__node.highlighted {
+  border: 2px solid #00e676 !important;
+  box-shadow: 0 0 0 2px #00e676;
+  transition: border 0.2s;
+}
+
+.react-flow__edge-path.highlighted-edge {
+  stroke: #00e676 !important;
+  stroke-width: 2 !important;
+}
