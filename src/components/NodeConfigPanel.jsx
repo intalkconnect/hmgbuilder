@@ -16,22 +16,6 @@ export default function NodeConfigPanel({
     useEffect(() => {
     fetchLatestFlows();
       
-Object.entries(blocks).forEach(([label, block]) => {
-  const nodeId = label;
-  nodes.push({
-    id: nodeId,
-    type: 'quadrado',
-    position: block.position || { x: 100, y: 100 },
-    data: {
-      label,
-      type: block.type,
-      color: getColorForBlockType(block.type),
-      block,
-    },
-  });
-});
-
-      
   }, []);
 
 
@@ -51,19 +35,67 @@ Object.entries(blocks).forEach(([label, block]) => {
 
 const handleRestore = async (id) => {
   try {
-    // Ativa o fluxo primeiro
-    await fetch("https://ia-srv-meta.9j9goo.easypanel.host/flow/activate", {
+    // Ativa o fluxo
+    const activateRes = await fetch("https://ia-srv-meta.9j9goo.easypanel.host/flow/activate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
 
-    // Depois recarrega a página para aplicar o fluxo ativo
-    window.location.reload();
+    if (!activateRes.ok) throw new Error("Falha ao ativar fluxo");
+
+    // Após ativar, recarrega ou reidrata os nodes
+    const res = await fetch(`https://ia-srv-meta.9j9goo.easypanel.host/flow/data/${id}`);
+    const data = await res.json();
+
+    const loadedNodes = [];
+    const loadedEdges = [];
+    const blocks = data.blocks || {};
+
+    const getColorForBlockType = (type) => {
+      switch (type) {
+        case "text": return "#546E7A";
+        case "interactive": return "#388E3C";
+        case "http": return "#0277BD";
+        case "human": return "#FF5722";
+        default: return "#777";
+      }
+    };
+
+    Object.entries(blocks).forEach(([label, block]) => {
+      const nodeId = label;
+      loadedNodes.push({
+        id: nodeId,
+        type: 'quadrado',
+        position: block.position || { x: 100, y: 100 },
+        data: {
+          label,
+          type: block.type,
+          color: getColorForBlockType(block.type),
+          block,
+        },
+      });
+
+      (block.actions || []).forEach((action, idx) => {
+        if (action.next) {
+          loadedEdges.push({
+            id: `${nodeId}-${action.next}-${idx}`,
+            source: nodeId,
+            target: action.next,
+          });
+        }
+      });
+    });
+
+    // Setar estados globais (você deve passar essas setters via props ou usar contexto/global state)
+    setNodes(loadedNodes);
+    setEdges(loadedEdges);
+
   } catch (err) {
-    alert("Erro ao restaurar fluxo");
+    alert("Erro ao restaurar fluxo: " + err.message);
   }
 };
+
 
 
   if (!selectedNode) return (
