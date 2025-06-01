@@ -305,7 +305,6 @@ const onNodesChange = useCallback((changes) => {
   };
 
   loadLatestFlow();
-    setViewport({ x: 0, y: 0, zoom: 0.8 }, { duration: 800 });
 }, []);
 
   const handlePublish = async () => {
@@ -571,6 +570,7 @@ nodes.forEach((node) => {
         edges={styledEdges}
         edgeTypes={{ default: undefined }} // ou deixe sem declarar edgeTypes
         nodeTypes={nodeTypes}
+        onInit={(instance) => instance.setViewport({ x: 0, y: 0, zoom: 1.2 })}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
