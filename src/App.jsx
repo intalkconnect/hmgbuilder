@@ -90,10 +90,14 @@ export default function App() {
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [isPublishing, setIsPublishing] = useState(false);
 
-  const onNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    []
+const onNodesChange = useCallback((changes) => {
+  setNodes((nds) =>
+    applyNodeChanges(changes, nds.map(node => {
+      const change = changes.find(c => c.id === node.id && c.type === 'position');
+      return change ? { ...node, position: change.position } : node;
+    }))
   );
+}, []);
 
   const onEdgesChange = useCallback(
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
